@@ -52,13 +52,16 @@ WelfordState winmain::SleepState{};
 
 int winmain::WinMain(LPCSTR lpCmdLine)
 {
+	console_clear();
 	std::set_new_handler(memalloc_failure);
 
 	printf("Game version: %s\n", Version);
 	printf("Command line: %s\n", lpCmdLine);
 	printf("Compiled with: SDL %d.%d.%d;", SDL_MAJOR_VERSION, SDL_MINOR_VERSION, SDL_PATCHLEVEL);
-	printf(" SDL_mixer %d.%d.%d;", SDL_MIXER_MAJOR_VERSION, SDL_MIXER_MINOR_VERSION, SDL_MIXER_PATCHLEVEL);
+	//printf(" SDL_mixer %d.%d.%d;", SDL_MIXER_MAJOR_VERSION, SDL_MIXER_MINOR_VERSION, SDL_MIXER_PATCHLEVEL);
 	printf(" ImGui %s %s\n", IMGUI_VERSION, ImGuiRender);
+
+	console_render();
 
 	// SDL init
 	SDL_SetMainReady();
@@ -76,7 +79,7 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 	(
 		pb::get_rc_string(Msg::STRING139),
 		SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-		800, 556,
+		320, 240,
 		SDL_WINDOW_HIDDEN | SDL_WINDOW_RESIZABLE
 	);
 	MainWindow = window;
@@ -109,26 +112,26 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
 
-	auto prefPath = SDL_GetPrefPath("", "SpaceCadetPinball");
-	auto basePath = SDL_GetBasePath();
 
 	// SDL mixer init
-	bool mixOpened = false, noAudio = strstr(lpCmdLine, "-noaudio") != nullptr;
-	if (!noAudio)
-	{
-		if ((Mix_Init(MIX_INIT_MID_Proxy) & MIX_INIT_MID_Proxy) == 0)
-		{
-			printf("Could not initialize SDL MIDI, music might not work.\nSDL Error: %s\n", SDL_GetError());
-			SDL_ClearError();
-		}
-		if (Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 1024) != 0)
-		{
-			printf("Could not open audio device, continuing without audio.\nSDL Error: %s\n", SDL_GetError());
-			SDL_ClearError();
-		}
-		else
-			mixOpened = true;
-	}
+	bool mixOpened = false;
+	// if (!noAudio)
+	// {
+	// 	if ((Mix_Init(MIX_INIT_MID_Proxy) & MIX_INIT_MID_Proxy) == 0)
+	// 	{
+	// 		printf("Could not initialize SDL MIDI, music might not work.\nSDL Error: %s\n", SDL_GetError());
+	// 		SDL_ClearError();
+	// 	}
+	// 	if (Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 1024) != 0)
+	// 	{
+	// 		printf("Could not open audio device, continuing without audio.\nSDL Error: %s\n", SDL_GetError());
+	// 		SDL_ClearError();
+	// 	}
+	// 	else
+	// 		mixOpened = true;
+	// }
+
+	console_render();
 
 	auto resetAllOptions = strstr(lpCmdLine, "-reset") != nullptr;
 	do
@@ -140,7 +143,7 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 		ImGui::CreateContext();
 		ImGuiIO& io = ImGui::GetIO();
 		ImIO = &io;
-		auto iniPath = std::string(prefPath) + "imgui_pb.ini";
+		auto iniPath = std::string("sd://") + "imgui_pb.ini";
 		io.IniFilename = iniPath.c_str();
 
 		// First option initialization step: just load settings from .ini. Needs ImGui context.
@@ -189,8 +192,6 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 		{
 			{
 				"",
-				basePath,
-				prefPath
 			}
 		};
 		searchPaths.insert(searchPaths.end(), std::begin(PlatformDataPaths), std::end(PlatformDataPaths));
@@ -257,15 +258,13 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 	}
 	while (restart);
 
-	if (!noAudio)
-	{
-		if (mixOpened)
-			Mix_CloseAudio();
-		Mix_Quit();
-	}
+	// if (!noAudio)
+	// {
+	// 	if (mixOpened)
+	// 		Mix_CloseAudio();
+	// 	Mix_Quit();
+	// }
 
-	SDL_free(basePath);
-	SDL_free(prefPath);
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
 	SDL_Quit();
@@ -284,6 +283,7 @@ void winmain::MainLoop()
 
 	while (true)
 	{
+        console_clear();
 		if (DispFrameRate)
 		{
 			auto curTime = Clock::now();
@@ -406,7 +406,7 @@ void winmain::MainLoop()
 				if (Options.HybridSleep)
 					HybridSleep(targetTimeDelta);
 				else
-					std::this_thread::sleep_for(targetTimeDelta);
+					SDL_Delay(targetTimeDelta.count());
 				frameEnd = Clock::now();
 			}
 			else
@@ -421,6 +421,7 @@ void winmain::MainLoop()
 			frameStart = frameEnd;
 			UpdateToFrameCounter++;
 		}
+        console_render();
 	}
 
 	if (PrevSdlErrorCount > 0)
@@ -1364,7 +1365,7 @@ void winmain::HybridSleep(DurationMs sleepTarget)
 	while (sleepTarget > SpinThreshold)
 	{
 		auto start = Clock::now();
-		std::this_thread::sleep_for(DurationMs(1));
+		SDL_Delay(1);
 		auto end = Clock::now();
 
 		auto actualDuration = DurationMs(end - start);

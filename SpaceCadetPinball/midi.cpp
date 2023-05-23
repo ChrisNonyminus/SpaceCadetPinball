@@ -8,7 +8,7 @@
 std::vector<Mix_Music*> midi::LoadedTracks{};
 Mix_Music* midi::track1, * midi::track2, * midi::track3;
 MidiTracks midi::active_track, midi::NextTrack;
-int midi::Volume = MIX_MAX_VOLUME;
+int midi::Volume = SDL_MIX_MAXVOLUME;
 bool midi::IsPlaying = false, midi::MixOpen = false;
 
 constexpr uint32_t FOURCC(uint8_t a, uint8_t b, uint8_t c, uint8_t d)
@@ -55,8 +55,8 @@ void midi::StopPlayback()
 {
 	if (active_track != MidiTracks::None)
 	{
-		if (MixOpen)
-			Mix_HaltMusic();
+		// if (MixOpen)
+		// 	Mix_HaltMusic();
 		active_track = MidiTracks::None;
 	}
 }
@@ -93,10 +93,10 @@ void midi::music_shutdown()
 {
 	music_stop();
 
-	for (auto midi : LoadedTracks)
-	{
-		Mix_FreeMusic(midi);
-	}
+	// for (auto midi : LoadedTracks)
+	// {
+	// 	//Mix_FreeMusic(midi);
+	// }
 	active_track = MidiTracks::None;
 	LoadedTracks.clear();
 }
@@ -104,8 +104,8 @@ void midi::music_shutdown()
 void midi::SetVolume(int volume)
 {
 	Volume = volume;
-	if (MixOpen)
-		Mix_VolumeMusic(volume);
+	// if (MixOpen)
+	// 	Mix_VolumeMusic(volume);
 }
 
 Mix_Music* midi::load_track(std::string fileName)
@@ -149,8 +149,8 @@ Mix_Music* midi::load_track_sub(std::string fileName, bool isMidi)
 			if (fileHandle)
 			{
 				fclose(fileHandle);
-				auto rw = SDL_RWFromFile(filePath.c_str(), "rb");
-				audio = Mix_LoadMUS_RW(rw, 1);
+				//auto rw = SDL_RWFromFile(filePath.c_str(), "rb");
+				//audio = Mix_LoadMUS_RW(rw, 1);
 				break;
 			}
 		}
@@ -165,8 +165,8 @@ Mix_Music* midi::load_track_sub(std::string fileName, bool isMidi)
 				fwrite(midi->data(), 1, midi->size(), fileHandle);
 				fclose(fileHandle);*/
 
-				auto rw = SDL_RWFromMem(midi->data(), static_cast<int>(midi->size()));
-				audio = Mix_LoadMUS_RW(rw, 1); // This call seems to leak memory no matter what.
+				//auto rw = SDL_RWFromMem(midi->data(), static_cast<int>(midi->size()));
+				//audio = Mix_LoadMUS_RW(rw, 1); // This call seems to leak memory no matter what.
 				delete midi;
 				break;
 			}
@@ -190,11 +190,13 @@ bool midi::play_track(MidiTracks track, bool replay)
 		return false;
 	}
 
-	if (MixOpen && Mix_PlayMusic(midi, -1))
-	{
-		active_track = MidiTracks::None;
+	// if (MixOpen && Mix_PlayMusic(midi, -1))
+	// {
+	// 	active_track = MidiTracks::None;
+	// 	return false;
+	// }
+	active_track = MidiTracks::None;
 		return false;
-	}
 
 	// On Windows, MIDI volume can only be set during playback.
 	// And it changes application master volume for some reason.

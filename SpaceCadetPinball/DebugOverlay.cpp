@@ -271,7 +271,7 @@ void DebugOverlay::DrawBallDepthSteps()
 			// Snap X coordinate to edge box sides
 			auto x1 = proj::xform_to_2d(vector2{edgeMan.MinX, depthPt->Y}).X;
 			auto x2 = proj::xform_to_2d(vector2{edgeMan.MaxBoxX * edgeMan.AdvanceX + edgeMan.MinX, depthPt->Y}).X;
-			auto ff =  proj::xform_to_2d(vector2{ edgeMan.MaxBoxX * edgeMan.AdvanceX + edgeMan.MinX, depthPt->Y });
+			//auto ff =  proj::xform_to_2d(vector2{ edgeMan.MaxBoxX * edgeMan.AdvanceX + edgeMan.MinX, depthPt->Y });
 			SDL_RenderDrawLine(winmain::Renderer, x1, pt.Y, x2, pt.Y);
 		}
 		break;

@@ -11,6 +11,10 @@ int main(int argc, char* argv[])
 		cmdLine += argv[i];
 	}
 
+
+    console_init();
+	console_set_render_mode(RENDER_AUTOMATIC);
+
 	return winmain::WinMain(cmdLine.c_str());
 }
 

@@ -20,7 +20,7 @@ void font_selection::RenderDialog()
 {
 	if (ShowDialogFlag == true)
 	{
-		strncpy(DialogInputBuffer, options::Options.FontFileName.V.c_str(), sizeof(DialogInputBuffer));
+		strncpy(DialogInputBuffer, options::Options.FontFileName.V.c_str(), 260);
 		ShowDialogFlag = false;
 		if (!ImGui::IsPopupOpen(popupName))
 		{

@@ -300,3 +300,4 @@ build.ninja
 
 build/
 filesystem/
+*.z64

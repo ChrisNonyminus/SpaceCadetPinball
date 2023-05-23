@@ -6,7 +6,7 @@
 int Sound::num_channels;
 bool Sound::enabled_flag = false;
 std::vector<ChannelInfo> Sound::Channels{};
-int Sound::Volume = MIX_MAX_VOLUME;
+int Sound::Volume = SDL_MIX_MAXVOLUME;
 bool Sound::MixOpen = false;
 
 void Sound::Init(bool mixOpen, int channels, bool enableFlag, int volume)

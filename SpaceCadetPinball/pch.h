@@ -33,7 +33,26 @@
 #include <initializer_list>
 //#include <array>
 
+// libdragon includes and SDL stubs
 #include <libdragon.h>
+#define SDL_MAIN_HANDLED
+#include <SDL.h>
+struct Mix_Chunk {};
+struct Mix_Music {};
+inline void Mix_HaltChannel(int) {}
+inline void Mix_Resume(int) {}
+inline void Mix_Pause(int) {}
+inline int Mix_Playing(int) {return 0;}
+inline int Mix_PlayChannel(int, Mix_Chunk*, int) {return -1;}
+inline Mix_Chunk* Mix_LoadWAV(const char* fname) {
+	return new Mix_Chunk;
+}
+inline void Mix_FreeChunk(Mix_Chunk* chnk) { delete chnk; }
+inline void Mix_AllocateChannels(int) {}
+inline void Mix_Volume(int, int) {}
+inline void Mix_SetPosition(int, int, int) {}
+#define MIX_INIT_FLUIDSYNTH 0
+
 
 // MIX_INIT_FLUIDSYNTH was renamed to MIX_INIT_MID in SDL_mixer v2.0.2
 // Older versions of SDL_mixer did not have SDL_MIXER_VERSION_ATLEAST

@@ -769,9 +769,11 @@ std::string pb::make_path_name(const std::string& fileName)
 
 void pb::ShowMessageBox(Uint32 flags, LPCSTR title, LPCSTR message)
 {
-	fprintf(flags == SDL_MESSAGEBOX_ERROR ? stderr : stdout, "BL error: %s\n%s\n", title, message);
+	//console_clear();
+	//fprintf(flags == SDL_MESSAGEBOX_ERROR ? stderr : stdout, "BL error: %s\n%s\n", title, message);
 	//SDL_ShowSimpleMessageBox(flags, title, message, winmain::MainWindow);
-	console_render();
+	printf("Message: %s\n%s\n", (title != nullptr) ? (title) : "<NULL MESSAGEBOX TITLE>", (message != nullptr) ? message : "<NULL MESSAGEBOX BODY>");
+	//console_render();
 
 }
 

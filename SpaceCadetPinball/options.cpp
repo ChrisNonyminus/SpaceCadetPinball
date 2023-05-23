@@ -167,8 +167,8 @@ void options::InitPrimary()
 	// Settings are loaded from disk on the first frame
 	if (!imContext->SettingsLoaded)
 	{
-		ImGui::LoadIniSettingsFromDisk(imContext->IO.IniFilename);
-		imContext->SettingsLoaded = true;
+		// ImGui::LoadIniSettingsFromDisk(imContext->IO.IniFilename);
+		// imContext->SettingsLoaded = true;
 	}
 
 	for (const auto opt : AllOptions)

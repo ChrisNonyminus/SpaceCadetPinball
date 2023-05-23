@@ -65,12 +65,18 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 
 	// SDL init
 	SDL_SetMainReady();
-	if (SDL_Init(SDL_INIT_TIMER | SDL_INIT_AUDIO | SDL_INIT_VIDEO |
-		SDL_INIT_EVENTS | SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER) < 0)
+	if (SDL_Init(/*SDL_INIT_TIMER | SDL_INIT_AUDIO | SDL_INIT_VIDEO |
+		SDL_INIT_EVENTS | SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER*/0) < 0)
 	{
 		pb::ShowMessageBox(SDL_MESSAGEBOX_ERROR, "Could not initialize SDL2", SDL_GetError());
 		return 1;
 	}
+
+	if(dfs_init( DFS_DEFAULT_LOCATION ) != DFS_ESUCCESS)
+    {
+        pb::ShowMessageBox(SDL_MESSAGEBOX_ERROR, "Could not initialize Space Cadet", "Filesystem failed to start!\n");
+		return 1;
+    }
 
 	pb::quickFlag = strstr(lpCmdLine, "-quick") != nullptr;
 
@@ -79,7 +85,7 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 	(
 		pb::get_rc_string(Msg::STRING139),
 		SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-		320, 240,
+		640, 480,
 		SDL_WINDOW_HIDDEN | SDL_WINDOW_RESIZABLE
 	);
 	MainWindow = window;
@@ -143,8 +149,8 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 		ImGui::CreateContext();
 		ImGuiIO& io = ImGui::GetIO();
 		ImIO = &io;
-		auto iniPath = std::string("sd://") + "imgui_pb.ini";
-		io.IniFilename = iniPath.c_str();
+		//auto iniPath = std::string("sd://") + "imgui_pb.ini";
+		io.IniFilename = nullptr;
 
 		// First option initialization step: just load settings from .ini. Needs ImGui context.
 		options::InitPrimary();

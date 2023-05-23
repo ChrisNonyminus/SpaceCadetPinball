@@ -283,7 +283,6 @@ CMakeCache.txt
 CMakeFiles
 CMakeScripts
 Testing
-Makefile
 cmake_install.cmake
 install_manifest.txt
 compile_commands.json
@@ -298,3 +297,6 @@ _deps
 .ninja_deps
 .ninja_log
 build.ninja
+
+build/
+filesystem/

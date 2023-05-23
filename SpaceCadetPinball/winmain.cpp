@@ -71,6 +71,7 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 		pb::ShowMessageBox(SDL_MESSAGEBOX_ERROR, "Could not initialize SDL2", SDL_GetError());
 		return 1;
 	}
+	printf("SDL initialized!\n");
 
 	if(dfs_init( DFS_DEFAULT_LOCATION ) != DFS_ESUCCESS)
     {
@@ -85,7 +86,7 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 	(
 		pb::get_rc_string(Msg::STRING139),
 		SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-		640, 480,
+		320,240,
 		SDL_WINDOW_HIDDEN | SDL_WINDOW_RESIZABLE
 	);
 	MainWindow = window;
@@ -137,7 +138,6 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 	// 		mixOpened = true;
 	// }
 
-	console_render();
 
 	auto resetAllOptions = strstr(lpCmdLine, "-reset") != nullptr;
 	do
@@ -289,7 +289,7 @@ void winmain::MainLoop()
 
 	while (true)
 	{
-        console_clear();
+        //console_clear();
 		if (DispFrameRate)
 		{
 			auto curTime = Clock::now();
@@ -427,7 +427,7 @@ void winmain::MainLoop()
 			frameStart = frameEnd;
 			UpdateToFrameCounter++;
 		}
-        console_render();
+        //console_render();
 	}
 
 	if (PrevSdlErrorCount > 0)

@@ -53,6 +53,17 @@ inline void Mix_Volume(int, int) {}
 inline void Mix_SetPosition(int, int, int) {}
 #define MIX_INIT_FLUIDSYNTH 0
 
+inline uint32_t scp_bswap32(uint32_t x) {
+	return ((x & 0xff000000) >> 24) |
+		   ((x & 0x00ff0000) >> 8) |
+		   ((x & 0x0000ff00) << 8) |
+		   ((x & 0x000000ff) << 24);
+}
+
+inline uint16_t scp_bswap16(uint16_t x) {
+	return ((x & 0xff00) >> 8) |
+		   ((x & 0x00ff) << 8);
+}
 
 // MIX_INIT_FLUIDSYNTH was renamed to MIX_INIT_MID in SDL_mixer v2.0.2
 // Older versions of SDL_mixer did not have SDL_MIXER_VERSION_ATLEAST

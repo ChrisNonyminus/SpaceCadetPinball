@@ -529,13 +529,13 @@ namespace
 
 namespace ImGuiSDL
 {
-	static int ImGuiSDLEventWatch(void* userdata, SDL_Event* event) {
-		if (event->type == SDL_RENDER_TARGETS_RESET) {
-			// Device lost event, applies to DirectX and some mobile devices.
-			CurrentDevice->CacheWasInvalidated = true;
-		}
-		return 0;
-	}
+	// static int ImGuiSDLEventWatch(void* userdata, SDL_Event* event) {
+	// 	if (event->type == SDL_RENDER_TARGETS_RESET) {
+	// 		// Device lost event, applies to DirectX and some mobile devices.
+	// 		CurrentDevice->CacheWasInvalidated = true;
+	// 	}
+	// 	return 0;
+	// }
 
 	void Initialize(SDL_Renderer* renderer, int windowWidth, int windowHeight)
 	{
@@ -566,7 +566,7 @@ namespace ImGuiSDL
 		io.Fonts->TexID = (void*)texture;
 
 		CurrentDevice = new Device(renderer);
-		SDL_AddEventWatch(ImGuiSDLEventWatch, nullptr);
+		//SDL_AddEventWatch(ImGuiSDLEventWatch, nullptr);
 	}
 
 	void Deinitialize()
@@ -577,7 +577,7 @@ namespace ImGuiSDL
 		delete texture;
 
 		delete CurrentDevice;
-		SDL_DelEventWatch(ImGuiSDLEventWatch, nullptr);
+		//SDL_DelEventWatch(ImGuiSDLEventWatch, nullptr);
 	}
 
 	void Render(ImDrawData* drawData)

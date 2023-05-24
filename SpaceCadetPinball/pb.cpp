@@ -772,7 +772,7 @@ void pb::ShowMessageBox(Uint32 flags, LPCSTR title, LPCSTR message)
 	//console_clear();
 	//fprintf(flags == SDL_MESSAGEBOX_ERROR ? stderr : stdout, "BL error: %s\n%s\n", title, message);
 	//SDL_ShowSimpleMessageBox(flags, title, message, winmain::MainWindow);
-	printf("Message: %s\n%s\n", (title != nullptr) ? (title) : "<NULL MESSAGEBOX TITLE>", (message != nullptr) ? message : "<NULL MESSAGEBOX BODY>");
+	printf("Message: %s\n%s\n\n", (title != nullptr) ? (title) : "<NULL MESSAGEBOX TITLE>", (message != nullptr) ? message : "<NULL MESSAGEBOX BODY>");
 	//console_render();
 
 }

@@ -53,11 +53,11 @@ WelfordState winmain::SleepState{};
 int winmain::WinMain(LPCSTR lpCmdLine)
 {
 	console_clear();
-	std::set_new_handler(memalloc_failure);
+	//std::set_new_handler(memalloc_failure);
 
 	printf("Game version: %s\n", Version);
 	printf("Command line: %s\n", lpCmdLine);
-	printf("Compiled with: SDL %d.%d.%d;", SDL_MAJOR_VERSION, SDL_MINOR_VERSION, SDL_PATCHLEVEL);
+	printf("Compiled with: SDL %d.%d.%d;\n", SDL_MAJOR_VERSION, SDL_MINOR_VERSION, SDL_PATCHLEVEL);
 	//printf(" SDL_mixer %d.%d.%d;", SDL_MIXER_MAJOR_VERSION, SDL_MIXER_MINOR_VERSION, SDL_MIXER_PATCHLEVEL);
 	printf(" ImGui %s %s\n", IMGUI_VERSION, ImGuiRender);
 
@@ -66,7 +66,7 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 	// SDL init
 	SDL_SetMainReady();
 	if (SDL_Init(/*SDL_INIT_TIMER | SDL_INIT_AUDIO | SDL_INIT_VIDEO |
-		SDL_INIT_EVENTS | SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER*/0) < 0)
+		SDL_INIT_EVENTS | SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER*/SDL_INIT_EVENTS | SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER) < 0)
 	{
 		pb::ShowMessageBox(SDL_MESSAGEBOX_ERROR, "Could not initialize SDL2", SDL_GetError());
 		return 1;
@@ -81,11 +81,18 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 
 	pb::quickFlag = strstr(lpCmdLine, "-quick") != nullptr;
 
+	if (SDL_InitSubSystem(SDL_INIT_VIDEO) == -1)
+	{
+		pb::ShowMessageBox(SDL_MESSAGEBOX_ERROR, "Could not init SDL Video", SDL_GetError());
+		return 1;
+	}
+
+
 	// SDL window
 	SDL_Window* window = SDL_CreateWindow
 	(
 		pb::get_rc_string(Msg::STRING139),
-		SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+		SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 		320,240,
 		SDL_WINDOW_HIDDEN | SDL_WINDOW_RESIZABLE
 	);
@@ -139,59 +146,59 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 	// }
 
 
-	auto resetAllOptions = strstr(lpCmdLine, "-reset") != nullptr;
+	//auto resetAllOptions = strstr(lpCmdLine, "-reset") != nullptr;
 	do
 	{
 		restart = false;
 
-		// ImGui init
-		IMGUI_CHECKVERSION();
-		ImGui::CreateContext();
-		ImGuiIO& io = ImGui::GetIO();
-		ImIO = &io;
-		//auto iniPath = std::string("sd://") + "imgui_pb.ini";
-		io.IniFilename = nullptr;
+		// // ImGui init
+		// IMGUI_CHECKVERSION();
+		// ImGui::CreateContext();
+		// ImGuiIO& io = ImGui::GetIO();
+		// ImIO = &io;
+		// //auto iniPath = std::string("sd://") + "imgui_pb.ini";
+		// io.IniFilename = nullptr;
 
-		// First option initialization step: just load settings from .ini. Needs ImGui context.
-		options::InitPrimary();
-		if (resetAllOptions)
-		{
-			resetAllOptions = false;
-			options::ResetAllOptions();
-		}
+		// // First option initialization step: just load settings from .ini. Needs ImGui context.
+		// options::InitPrimary();
+		// if (resetAllOptions)
+		// {
+		// 	resetAllOptions = false;
+		// 	options::ResetAllOptions();
+		// }
 
-		if (!Options.FontFileName.V.empty())
-		{
-			ImVector<ImWchar> ranges;
-			translations::GetGlyphRange(&ranges);
-			ImFontConfig fontConfig{};
+		// if (!Options.FontFileName.V.empty())
+		// {
+		// 	ImVector<ImWchar> ranges;
+		// 	translations::GetGlyphRange(&ranges);
+		// 	ImFontConfig fontConfig{};
 
-			// ToDo: further tweak font options, maybe try imgui_freetype
-			fontConfig.OversampleV = 2;
-			fontConfig.OversampleH = 4;
+		// 	// ToDo: further tweak font options, maybe try imgui_freetype
+		// 	fontConfig.OversampleV = 2;
+		// 	fontConfig.OversampleH = 4;
 
-			// ToDo: improve font file test, checking if file exists is not enough
-			auto fontLoaded = false;
-			auto fileName = Options.FontFileName.V.c_str();
-			auto fileHandle = fopenu(fileName, "rb");
-			if (fileHandle)
-			{
-				fclose(fileHandle);
+		// 	// ToDo: improve font file test, checking if file exists is not enough
+		// 	auto fontLoaded = false;
+		// 	auto fileName = Options.FontFileName.V.c_str();
+		// 	auto fileHandle = fopenu(fileName, "rb");
+		// 	if (fileHandle)
+		// 	{
+		// 		fclose(fileHandle);
 
-				// ToDo: Bind font size to UI scale
-				if (io.Fonts->AddFontFromFileTTF(fileName, 13.f, &fontConfig, ranges.Data))
-					fontLoaded = true;
-			}
+		// 		// ToDo: Bind font size to UI scale
+		// 		if (io.Fonts->AddFontFromFileTTF(fileName, 13.f, &fontConfig, ranges.Data))
+		// 			fontLoaded = true;
+		// 	}
 
-			if (!fontLoaded)
-				printf("Failed to load font: %s, using embedded font.\n", fileName);
-			io.Fonts->Build();
-		}
-		ImGui_Render_Init(renderer);
-		ImGui::StyleColorsDark();
+		// 	if (!fontLoaded)
+		// 		printf("Failed to load font: %s, using embedded font.\n", fileName);
+		// 	io.Fonts->Build();
+		// }
+		// ImGui_Render_Init(renderer);
+		// ImGui::StyleColorsDark();
 
-		ImGui_ImplSDL2_InitForSDLRenderer(window, Renderer);
-		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard | ImGuiConfigFlags_NavEnableGamepad;
+		// ImGui_ImplSDL2_InitForSDLRenderer(window, Renderer);
+		// io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard | ImGuiConfigFlags_NavEnableGamepad;
 
 		// Data search order: WD, executable path, user pref path, platform specific paths.
 		std::vector<const char*> searchPaths
@@ -233,10 +240,10 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 		pb::reset_table();
 		pb::firsttime_setup();
 
-		if (strstr(lpCmdLine, "-fullscreen"))
-		{
+		//if (strstr(lpCmdLine, "-fullscreen"))
+		//{
 			Options.FullScreen = true;
-		}
+		//}
 
 		if (!Options.FullScreen)
 		{
@@ -258,9 +265,9 @@ int winmain::WinMain(LPCSTR lpCmdLine)
 		Sound::Close();
 		pb::uninit();
 
-		ImGui_Render_Shutdown();
-		ImGui_ImplSDL2_Shutdown();
-		ImGui::DestroyContext();
+		// ImGui_Render_Shutdown();
+		// ImGui_ImplSDL2_Shutdown();
+		// ImGui::DestroyContext();
 	}
 	while (restart);
 
@@ -359,10 +366,10 @@ void winmain::MainLoop()
 
 			if (UpdateToFrameCounter >= UpdateToFrameRatio)
 			{
-				ImGui_ImplSDL2_NewFrame();
-				ImGui_Render_NewFrame();
-				ImGui::NewFrame();
-				RenderUi();
+				// ImGui_ImplSDL2_NewFrame();
+				// ImGui_Render_NewFrame();
+				// ImGui::NewFrame();
+				// RenderUi();
 
 				SDL_RenderClear(Renderer);
 				// Alternative clear hack, clear might fail on some systems
@@ -370,8 +377,8 @@ void winmain::MainLoop()
 				SDL_RenderFillRect(Renderer, nullptr);
 				render::PresentVScreen();
 
-				ImGui::Render();
-				ImGui_Render_RenderDrawData(ImGui::GetDrawData());
+				// ImGui::Render();
+				// ImGui_Render_RenderDrawData(ImGui::GetDrawData());
 
 				SDL_RenderPresent(Renderer);
 				frameCounter++;
@@ -826,48 +833,48 @@ void winmain::RenderUi()
 
 int winmain::event_handler(const SDL_Event* event)
 {
-	auto inputDown = false;
-	switch (event->type)
-	{
-	case SDL_KEYDOWN:
-	case SDL_MOUSEBUTTONDOWN:
-	case SDL_CONTROLLERBUTTONDOWN:
-		inputDown = true;
-		break;
-	default: break;
-	}
-	if (!options::WaitingForInput() || !inputDown)
-		ImGui_ImplSDL2_ProcessEvent(event);
+	// auto inputDown = false;
+	// switch (event->type)
+	// {
+	// case SDL_KEYDOWN:
+	// case SDL_MOUSEBUTTONDOWN:
+	// case SDL_CONTROLLERBUTTONDOWN:
+	// 	inputDown = true;
+	// 	break;
+	// default: break;
+	// }
+	// if (!options::WaitingForInput() || !inputDown)
+	// 	ImGui_ImplSDL2_ProcessEvent(event);
 
-	if (ImIO->WantCaptureMouse && !options::WaitingForInput())
-	{
-		if (mouse_down)
-		{
-			mouse_down = 0;
-			SDL_SetWindowGrab(MainWindow, SDL_FALSE);
-		}
-		switch (event->type)
-		{
-		case SDL_MOUSEMOTION:
-		case SDL_MOUSEBUTTONDOWN:
-		case SDL_MOUSEBUTTONUP:
-		case SDL_MOUSEWHEEL:
-			return 1;
-		default: ;
-		}
-	}
-	if (ImIO->WantCaptureKeyboard && !options::WaitingForInput())
-	{
-		switch (event->type)
-		{
-		case SDL_KEYDOWN:
-		case SDL_KEYUP:
-		case SDL_CONTROLLERBUTTONDOWN:
-		case SDL_CONTROLLERBUTTONUP:
-			return 1;
-		default: ;
-		}
-	}
+	// if (ImIO->WantCaptureMouse && !options::WaitingForInput())
+	// {
+	// 	if (mouse_down)
+	// 	{
+	// 		mouse_down = 0;
+	// 		SDL_SetWindowGrab(MainWindow, SDL_FALSE);
+	// 	}
+	// 	switch (event->type)
+	// 	{
+	// 	case SDL_MOUSEMOTION:
+	// 	case SDL_MOUSEBUTTONDOWN:
+	// 	case SDL_MOUSEBUTTONUP:
+	// 	case SDL_MOUSEWHEEL:
+	// 		return 1;
+	// 	default: ;
+	// 	}
+	// }
+	// if (ImIO->WantCaptureKeyboard && !options::WaitingForInput())
+	// {
+	// 	switch (event->type)
+	// 	{
+	// 	case SDL_KEYDOWN:
+	// 	case SDL_KEYUP:
+	// 	case SDL_CONTROLLERBUTTONDOWN:
+	// 	case SDL_CONTROLLERBUTTONUP:
+	// 		return 1;
+	// 	default: ;
+	// 	}
+	// }
 
 	switch (event->type)
 	{

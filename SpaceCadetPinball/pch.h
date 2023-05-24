@@ -54,15 +54,19 @@ inline void Mix_SetPosition(int, int, int) {}
 #define MIX_INIT_FLUIDSYNTH 0
 
 inline uint32_t scp_bswap32(uint32_t x) {
-	return ((x & 0xff000000) >> 24) |
-		   ((x & 0x00ff0000) >> 8) |
-		   ((x & 0x0000ff00) << 8) |
-		   ((x & 0x000000ff) << 24);
+    return __builtin_bswap32(x);
 }
 
 inline uint16_t scp_bswap16(uint16_t x) {
-	return ((x & 0xff00) >> 8) |
-		   ((x & 0x00ff) << 8);
+    return __builtin_bswap16(x);
+}
+
+// this one is _only_ for palette
+inline uint32_t scp_bswap32_palette(uint32_t x) {
+    return ((x & 0xff000000) >> 16) |
+           ((x & 0x00ff0000)) |
+           ((x & 0x0000ff00) << 16) |
+           ((x & 0x000000ff));
 }
 
 // MIX_INIT_FLUIDSYNTH was renamed to MIX_INIT_MID in SDL_mixer v2.0.2

@@ -40,7 +40,7 @@ struct ColorRgba
 	void SetBlue(uint8_t val) { Color = (Color & (~(0xffu << blueOffset))) | (val << blueOffset); }
 
 private:
-	static const unsigned alphaOffset = 3 * 8, redOffset = 2 * 8, greenOffset = 1 * 8, blueOffset = 0 * 8;
+	static const unsigned alphaOffset = 0 * 8, redOffset = 3 * 8, greenOffset = 2 * 8, blueOffset = 1 * 8;
 };
 
 static_assert(sizeof(ColorRgba) == 4, "Wrong size of RGBA color");

@@ -167,7 +167,7 @@ DatFile* partman::load_records(LPCSTR lpFileName, bool fullTiltMode)
 				if(entryType == FieldTypes::Palette) {
 					int32_t * temporaryPointer = (int32_t *)entryBuffer;
 					for(int16_t pixelCounter = 0; pixelCounter < 256; ++pixelCounter) {
-						temporaryPointer[pixelCounter] = scp_bswap32(temporaryPointer[pixelCounter]);
+						temporaryPointer[pixelCounter] = scp_bswap32_palette(temporaryPointer[pixelCounter]);
 					}
 				}
 				if(entryType == FieldTypes::ShortArray) {

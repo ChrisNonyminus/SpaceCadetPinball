@@ -134,10 +134,19 @@ void gdrv_bitmap8::CreateTexture(const char* scaleHint, int access)
 	Texture = SDL_CreateTexture
 	(
 		winmain::Renderer,
-		SDL_PIXELFORMAT_BGRA32,
+		SDL_PIXELFORMAT_RGBA8888,
 		access,
 		Width, Height
 	);
+	if (!Texture) {
+		char textureinfo[512];
+		sprintf(textureinfo, "Texture info:\n\tWidth: %d\n\tHeight: %d", Width, Height);
+		pb::ShowMessageBox(SDL_MESSAGEBOX_ERROR, "Could not create texture", textureinfo);
+		pb::ShowMessageBox(SDL_MESSAGEBOX_ERROR, "Could not create texture", SDL_GetError());
+		while (1) {
+
+		}
+	}
 	SDL_SetTextureBlendMode(Texture, SDL_BLENDMODE_NONE);
 }
 
